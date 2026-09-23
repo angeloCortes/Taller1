@@ -9,31 +9,113 @@ import java.util.Scanner;
 
 public class Main {
 
+	public static String[] nombreAlumno = new String[100];
+	public static String[] apellidoAlumno = new String[100];
+	public static String[] rutAlumno = new String[100];
+	public static String[] paraleloAlumno = new String[100];
+	public static String[] nombreSolicitud = new String[100];
+	public static String[] apellidoSolicitud = new String[100];
+	public static int totalAlumnos = 0;
+	public static int totalSolicitudes = 0;
+	
 	public static void main(String[] args) throws FileNotFoundException {
 		int opcion = 0;
+		
+		Scanner scanner = new Scanner(System.in);
 		
 		do {
 			System.out.println("--- Sistema de control del grupo de POO---");
 			System.out.println("1) Cargar archivos (alumnos y paralelos)");
-			System.out.println("2)");
+			System.out.println("2) Procesar solicitudes (filtro automatico)");
 			System.out.println("3)");
 			System.out.println("4)");
 			System.out.println("5)");
 			System.out.println("6)");
 			System.out.println("7)");
+			System.out.print("Ingrese la acción que desee hacer: ");
+			
+			opcion = Integer.parseInt(scanner.nextLine());
 			
 			if (opcion == 1) {
 				cargarAlumnos();
+				cargarSolicitudes();
+				
+			}else if (opcion == 2) {
+				procesarSolicitudes();
+				
 			}
 			
 		}while(opcion != 7);
+		
+		scanner.close();
 
 	}
+	
+	/* se debe crear la funcion que verifique las solicitudes
+	 */
+	private static void procesarSolicitudes() {
+		int totalAdmitidos = 0;
+		int totalRechazados = 0;
+				
+		int idx = 0;
+		for (int i = 0; i < totalSolicitudes; i++) {
+			
+			
+			
+		}
+		
+	}
+	
+	/**
+	 * Carga las solicitudes de ingreso desde el archivo {@code Solicitudes.txt}.
+	 */
+	private static void cargarSolicitudes() throws FileNotFoundException {
+		File listaSolicitudes = new File("Solicitudes.txt");
+		Scanner linea = new Scanner(listaSolicitudes);
+		
+		int i = 0;
+		while (linea.hasNextLine()){
+			
+			String datosSolicitudes = linea.nextLine();
+			String[] datos = datosSolicitudes.split("-");
+			
+			nombreSolicitud[i] = datos[0];
+			apellidoSolicitud[i] = datos[1];
+			
+			i++;
+		}
+		System.out.println("Se cargaron " + i + " solicitudes...");
+		totalSolicitudes = i;
+		
+		linea.close();
+		return;
+	}
 
+	/**
+	 * Carga los datos de los alumnos desde el archivo {@code Alumnos.txt}.
+	 */	
 	private static void cargarAlumnos() throws FileNotFoundException {
-		File listaAlumnos = new File("txts/Alumnos.txt");
+		File listaAlumnos = new File("Alumnos.txt");
 		Scanner linea = new Scanner(listaAlumnos);
 		
+		int i = 0;
+		while (linea.hasNextLine()) {
+			String datosAlumno = linea.nextLine();
+			String[] datos = datosAlumno.split(";");
+			
+			nombreAlumno[i] = datos[0];
+			apellidoAlumno[i] = datos[1];
+			rutAlumno[i] = datos[2];
+			paraleloAlumno[i] = datos[3];
+			
+			i++;
+		}
+		System.out.println("Archivos cargado exitosamente!");
+		System.out.println("se cargaron " + i + " alumnos en la lista");
+		totalAlumnos = i;
+		
+		linea.close();
+		return;
 	}
 
 }
