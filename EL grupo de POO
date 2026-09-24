@@ -18,6 +18,16 @@ public class Main {
 	public static int totalAlumnos = 0;
 	public static int totalSolicitudes = 0;
 	
+	/*Lista aceptados y rechazados*/
+
+	public static String[] nombreAceptados = new String[100];
+	public static String[] apellidoAceptados = new String[100];
+	public static String[] rutAceptados = new String[100];
+	public static String[] paraleloAceptados = new String[100];
+	public static String[] nombreRechazados = new String[100];
+	public static String[] apellidoRechazados = new String[100];
+	
+	
 	/**Contadores y comprobacion de archivo
 	 */
 	public static boolean archivosCargados = false;
@@ -45,7 +55,6 @@ public class Main {
 			System.out.println("7) Salir");
 			System.out.print("Ingrese la acción que desee hacer: ");
 			
-			/** agrege Try catch en casos de queno se ingrese un numero */
 			try {
 				opcion = Integer.parseInt(scanner.nextLine());
 				
@@ -69,23 +78,77 @@ public class Main {
 
 	}
 	
-	/* se debe crear la funcion que verifique las solicitudes
+	/* aqui se procesan las solicitudes
 	 */
 	private static void procesarSolicitudes() {
-		int totalAdmitidos = 0;
-		int totalRechazados = 0;
-				
+		System.out.println("Procesando solicitudes...");
+		int totalAceptados = 0;
+		totalRechazados = 0;
+		
+		/*Cambia indice le la lista de solicitudes, booleano para la confirmacion de la lista de solicitudes*/
 		for (int i = 0; i < totalSolicitudes; i++) {
+			boolean encontrado = false;
 			
+			/* Cambia indice de la  lista de alumnos*/
 			for (int j = 0; j < totalAlumnos; j++) {
 				
-				
-				
-			}
+				if (nombreSolicitud[i].equals(nombreAlumno[j]) && apellidoSolicitud[i].equals(apellidoAlumno[j])){
+					
+					/* Confirma si la solicitud ya fue aceptada o no, en casos de que se repita*/
+					boolean soliAceptada = false;
+					for (int k = 0; k < totalAceptados; k++) {
+						if (rutAlumno[j].equals(rutAceptados[k])) {
+							soliAceptada = true;
+							break;
+						}
+						
+					}
+					/* Agrega en la lista aceptados*/
+					if (!soliAceptada) {
+						nombreAceptados[totalAceptados] = nombreAlumno[j];
+						apellidoAceptados[totalAceptados] = apellidoAlumno[j];
+						rutAceptados[totalAceptados] = rutAlumno[j];
+						paraleloAceptados[totalAceptados] = paraleloAlumno[j];
+						
+						if(paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
+							admitidosC1++;
+						
+						}else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
+							admitidosC2++;
+							
+						}
+						
+						System.out.println("[Aceptado] " + nombreAceptados[totalAceptados] + " " + apellidoAceptados[totalAceptados] + " --> Admitido en " + paraleloAceptados[totalAceptados]);
+						
+						totalAceptados++;
+						
+					/* Procesa las solicitudes repetidas*/
+					}else if (soliAceptada) {
+						nombreRechazados[totalRechazados] = nombreSolicitud[i];
+						apellidoRechazados[totalRechazados] = apellidoSolicitud[i];
+						
+						System.out.println("[Rechazado] " + nombreRechazados[totalRechazados] + " " + apellidoRechazados[totalRechazados] + " --> Ya fue procesado");
+						totalRechazados++;
+						
+					}
+					encontrado = true;
+					break;
+					
+				}			
+				}
 			
+			/* comprueba y agrega las solicitudes rechazadas*/
+			if (!encontrado) {
+				nombreRechazados[totalRechazados] = nombreSolicitud[i];
+				apellidoRechazados[totalRechazados] = apellidoSolicitud[i];
+				
+				System.out.println("[Rechazado] " + nombreRechazados[totalRechazados] + " " + apellidoRechazados[totalRechazados] + " --> No pertenece a ningun paralelo");
+				totalRechazados++;
 			
+			}		
 		}
 		
+		System.out.println("Resumen: " + totalAceptados + " aceptados / " + totalRechazados + " rechazados\n");
 	}
 	
 	/**
