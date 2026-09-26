@@ -2,7 +2,7 @@
 
 //Javiera Maluenda - 21.995.972-9 - ITI
 
-package taller_1;
+package Taller;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -140,12 +140,20 @@ public class Main {
 				administracionCurso();
 				}
 				
-			} else if (opcion == 7) {
+			}else if (opcion == 5) {
+				if (!archivosCargados) {
+                    System.out.println("Error: Debe cargar los archivos primero (Opcion 1).\n");
+
+				}else {
+				generarReportes();
+				}
+				
+			}else if (opcion == 7) {
 
 				System.out.println("Adios...");
 
 			}else {
-				System.out.println("Error: ingrese una opción valida...0\n");
+				System.out.println("Error: ingrese una opción valida...\n");
 			}
 
 		} while (opcion != 7);
@@ -153,7 +161,125 @@ public class Main {
 		scanner.close();
 
 	}
+	/*verifica la versión del archivo*/
+	private static int obtenerSiguienteVersion(String nomArchivo) {
+	    int version = 1;
+	    // arma el nombre que tendria la version 1 (ej: "Reportes/ReporteC1-V1.txt")
+	    File archivo = new File("Reportes/" + nomArchivo + "-V" + version + ".txt");
 
+	    while (archivo.exists()) {
+	        version++;
+	        archivo = new File("Reportes/" + nomArchivo + "-V" + version + ".txt");
+	    }
+
+	    return version;
+	}
+	
+	/*creación de reportes*/
+	private static void generarReportes() {
+		Scanner scanner = new Scanner(System.in);
+		int op = 0;
+		
+		do {
+			System.out.println("\n--- Generar reportes ---");
+			System.out.println("1) Reporte paralelo C1");
+			System.out.println("2) Reporte paralelo C2");
+			System.out.println("3) Reporte de rechazados");
+			System.out.println("4) Volver");
+			System.out.print("Ingrese opción: ");
+			
+			try {
+				op = Integer.parseInt(scanner.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Error: debe ingresar una opción valida\n");
+				return;
+			}
+			File carpeta = new File("Reportes");
+			
+			/*El método exists() es una función de File que sirve para comprobar si un archivo existe en la ruta especificada.*/
+			if (!carpeta.exists()) {
+				/*es un comando que se utiliza para crear una nueva carpeta o directorio en el sistema de archivos.*/
+			    boolean creada = carpeta.mkdir();
+			    if (!creada) {
+			        System.out.println("Error: no se pudo crear la carpeta Reportes");
+			        return;
+			    }
+			}
+
+		    if (op == 1) {
+		        generarReporteParalelo("C1");
+		    } else if (op == 2) {
+		        generarReporteParalelo("C2");
+		    } else if (op == 3) {
+		        generarReporteRechazados();
+		    } else if (op == 4) {
+		    	System.out.println("Volviendo");
+		        return;
+		    } else {
+		        System.out.println("Error: ingrese una opción valida...\n");
+		    }
+			
+		}while (op != 4);
+		
+	}
+	/*genera los reportes de rechazados*/
+	private static void generarReporteRechazados() {
+		int version = obtenerSiguienteVersion("Rechazados");
+	    String nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+
+	    try {
+	        BufferedWriter reporte = new BufferedWriter(new FileWriter(nombreArchivo));
+
+	        reporte.write("=== Solicitudes rechazadas ===");
+	        reporte.newLine();
+
+	        for (int i = 0; i < totalRechazados; i++) {
+
+	            if (nombreRechazados[i].equals("NO EXISTE")) {
+	                reporte.write("Sin nombre registrado, RUT: " + rutRechazados[i]);
+	            } else {
+	                reporte.write(nombreRechazados[i] + " " + apellidoRechazados[i]
+	                        + " - No pertenece a ningun paralelo del curso");
+	            }
+
+	            reporte.newLine();
+	        }
+
+	        reporte.close();
+	        System.out.println("Reporte generado: " + nombreArchivo + "\n");
+
+	    } catch (IOException e) {
+	        System.out.println("Error al generar el reporte...");
+	    }
+		
+	}
+	/*genera los reportes de los paralelos*/
+	private static void generarReporteParalelo(String paralelo) {
+		int version = obtenerSiguienteVersion("Reporte" + paralelo);
+	    String nombreArchivo = "Reportes/Reporte" + paralelo + "-V" + version + ".txt";
+
+	    try {
+	        BufferedWriter reporte = new BufferedWriter(new FileWriter(nombreArchivo));
+
+	        reporte.write("=== Miembros del grupo - Paralelo " + paralelo + " ===");
+	        reporte.newLine();
+
+	        for (int i = 0; i < totalAceptados; i++) {
+	            if (paraleloAceptados[i].equalsIgnoreCase(paralelo)) {
+	                reporte.write(nombreAceptados[i] + " " + apellidoAceptados[i] + " - " + rutAceptados[i]);
+	                reporte.newLine();
+	            }
+	        }
+
+	        reporte.close();
+	        System.out.println("Reporte generado: " + nombreArchivo + "\n");
+
+	    } catch (IOException e) {
+	        System.out.println("Error al generar el reporte...");
+	    }
+		
+	}
+	
 	/* Se creo la administación curso
 	 * 
 	 */
@@ -261,6 +387,8 @@ public class Main {
 				System.out.println("No se pudo agregar al alumno. Lista llena.");
 			}
 			
+		}else {
+			System.out.println("Error: Ingrese una opción valida");
 		}
 	}
 	
@@ -333,6 +461,16 @@ public class Main {
 							paraleloAceptados[totalAceptados] = paraleloAlumno[i];
 							totalAceptados++;
 							
+							if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
+
+								admitidosC1++;
+
+							} else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
+
+								admitidosC2++;
+
+							}
+							
 							System.out.println("Se inscribio a " + nombre + " " + apellido + " exitosamente");
 							
 							break;
@@ -371,6 +509,16 @@ public class Main {
 					rutAceptados[totalAceptados] = rutAlumno[i];
 					paraleloAceptados[totalAceptados] = paraleloAlumno[i];
 					
+					if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
+
+						admitidosC1++;
+
+					} else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
+
+						admitidosC2++;
+
+					}
+					
 					System.out.println("Se inscribio a " + nombreAceptados[totalAceptados] + " " + apellidoAceptados[totalAceptados] + " exitosamente");
 					
 					totalAceptados++;
@@ -380,8 +528,9 @@ public class Main {
 			}
 			/*guarda en una lista los RUT que no son validos*/
 			if (!rutValido) {
-				System.out.println("El RUT: " + rutEstudiante + " no pertenece a ningun paralelo");
-				nombreRechazados[totalRechazados] = "NO EXISE";
+				System.out.println("El RUT: " + rutEstudiante + " no pertenece a ningun paralelo.");
+				System.out.println("No se tiene e nombre, por lo que se almacenara solo el RUT.\n");
+				nombreRechazados[totalRechazados] = "NO EXISTE";
 			    apellidoRechazados[totalRechazados] = "NO EXISTE";
 				rutRechazados[totalRechazados] = rutEstudiante;
 
@@ -389,6 +538,8 @@ public class Main {
 				
 			}
 			
+		}else {
+			System.out.println("Error: ingrese una opción valida...");
 		}
 
 	}
