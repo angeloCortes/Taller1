@@ -2,7 +2,7 @@
 
 //Javiera Maluenda - 21.995.972-9 - ITI
 
-package taller_1;
+package Taller;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -255,7 +255,7 @@ public class Main {
 		    } else if (op == 3) {
 		        generarReporteRechazados();
 		    } else if (op == 4) {
-		    	System.out.println("Volviendo");
+		    	System.out.println("Volviendo...");
 		        return;
 		    } else {
 		        System.out.println("Error: ingrese una opción valida...\n");
@@ -429,6 +429,9 @@ public class Main {
 				System.out.println("No se pudo agregar al alumno. Lista llena.");
 			}
 			
+		}else if (op == 4) {
+			System.out.println("Volviendo...");
+			
 		}else {
 			System.out.println("Error: Ingrese una opción valida");
 		}
@@ -496,29 +499,30 @@ public class Main {
 				for (int i = 0; i < totalAlumnos; i++) {
 
 					if (nombreAlumno[i].equalsIgnoreCase(nombre) && apellidoAlumno[i].equalsIgnoreCase(apellido)) {
-							encontrado = true;
-							nombreAceptados[totalAceptados] = nombreAlumno[i];
-							apellidoAceptados[totalAceptados] = apellidoAlumno[i];
-							rutAceptados[totalAceptados] = rutAlumno[i];
-							paraleloAceptados[totalAceptados] = paraleloAlumno[i];
-							totalAceptados++;
-							
-							if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
-
-								admitidosC1++;
-
-							} else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
-
-								admitidosC2++;
-
-							}
+						encontrado = true;
+						if (!yaFueAceptado(rutAlumno[i])) {
+			                agregarAceptado(i);
+			                    
 							
 							System.out.println("Se inscribio a " + nombre + " " + apellido + " exitosamente");
+						
+						}else {
+							nombreRechazados[totalRechazados] = nombreSolicitud[i];
+
+							apellidoRechazados[totalRechazados] = apellidoSolicitud[i];
+
+							System.out.println("[Rechazado] " + nombreRechazados[totalRechazados] + " "
+									+ apellidoRechazados[totalRechazados] + " --> Ya fue procesado");
+
+							totalRechazados++;
 							
-							break;
-					}
+						}
+							
+						break;
 						
 					}
+		
+				}
 				/*Guarda en la lista los nombres invalidos*/
 				if (!encontrado) {
 					nombreRechazados[totalRechazados] = nombre;
@@ -546,24 +550,21 @@ public class Main {
 			for (int i = 0; i < totalAlumnos; i++) {
 				if (rutAlumno[i].equals(rutEstudiante)) {
 					rutValido = true;
-					nombreAceptados[totalAceptados] = nombreAlumno[i];
-					apellidoAceptados[totalAceptados] = apellidoAlumno[i];
-					rutAceptados[totalAceptados] = rutAlumno[i];
-					paraleloAceptados[totalAceptados] = paraleloAlumno[i];
-					
-					if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
+					if (!yaFueAceptado(rutAlumno[i])) {
+	                    agregarAceptado(i);
+	                    
+	                }else {
+						nombreRechazados[totalRechazados] = nombreSolicitud[i];
 
-						admitidosC1++;
+						apellidoRechazados[totalRechazados] = apellidoSolicitud[i];
 
-					} else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
+						System.out.println("[Rechazado] " + nombreRechazados[totalRechazados] + " "
+								+ apellidoRechazados[totalRechazados] + " --> Ya fue procesado");
 
-						admitidosC2++;
-
+						totalRechazados++;
+						
 					}
 					
-					System.out.println("Se inscribio a " + nombreAceptados[totalAceptados] + " " + apellidoAceptados[totalAceptados] + " exitosamente");
-					
-					totalAceptados++;
 					break;
 				}
 				
@@ -615,52 +616,14 @@ public class Main {
 				if (nombreSolicitud[i].equals(nombreAlumno[j]) && apellidoSolicitud[i].equals(apellidoAlumno[j])) {
 
 					/* Confirma si la solicitud ya fue aceptada o no, en casos de que se repita */
-
-					boolean soliAceptada = false;
-
-					for (int k = 0; k < totalAceptados; k++) {
-
-						if (rutAlumno[j].equals(rutAceptados[k])) {
-
-							soliAceptada = true;
-
-							break;
-
-						}
-
-					}
-
 					/* Agrega en la lista aceptados */
 
-					if (!soliAceptada) {
+					if (!yaFueAceptado(rutAlumno[j])) {
 
-						nombreAceptados[totalAceptados] = nombreAlumno[j];
-
-						apellidoAceptados[totalAceptados] = apellidoAlumno[j];
-
-						rutAceptados[totalAceptados] = rutAlumno[j];
-
-						paraleloAceptados[totalAceptados] = paraleloAlumno[j];
-
-						if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C1")) {
-
-							admitidosC1++;
-
-						} else if (paraleloAceptados[totalAceptados].equalsIgnoreCase("C2")) {
-
-							admitidosC2++;
-
-						}
-
-						System.out.println("[Aceptado] " + nombreAceptados[totalAceptados] + " "
-								+ apellidoAceptados[totalAceptados] + " --> Admitido en "
-								+ paraleloAceptados[totalAceptados]);
-
-						totalAceptados++;
-
+						agregarAceptado(j);
 						/* Procesa las solicitudes repetidas */
 
-					} else if (soliAceptada) {
+					}else {
 
 						nombreRechazados[totalRechazados] = nombreSolicitud[i];
 
@@ -782,6 +745,36 @@ public class Main {
 
 		return;
 
+	}
+	/*cambios para acortar procesos repetidos*/
+	
+	/* Verifica si un RUT ya esta en la lista de aceptados (evita duplicados) */
+	private static boolean yaFueAceptado(String rut) {
+	    for (int k = 0; k < totalAceptados; k++) {
+	        if (rutAceptados[k].equals(rut)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+	
+	/* Agrega el alumno (segun su indice en los arreglos de alumnos) a la lista de aceptados */
+	private static void agregarAceptado(int indice) {
+	    nombreAceptados[totalAceptados] = nombreAlumno[indice];
+	    apellidoAceptados[totalAceptados] = apellidoAlumno[indice];
+	    rutAceptados[totalAceptados] = rutAlumno[indice];
+	    paraleloAceptados[totalAceptados] = paraleloAlumno[indice];
+
+	    if (paraleloAlumno[indice].equalsIgnoreCase("C1")) {
+	        admitidosC1++;
+	    } else if (paraleloAlumno[indice].equalsIgnoreCase("C2")) {
+	        admitidosC2++;
+	    }
+
+	    System.out.println("[Aceptado] " + nombreAlumno[indice] + " " + apellidoAlumno[indice]
+	            + " --> Admitido en " + paraleloAlumno[indice]);
+
+	    totalAceptados++;
 	}
 
 }
