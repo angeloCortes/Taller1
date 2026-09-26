@@ -190,6 +190,32 @@ public class Main {
 		 */
 		System.out.println("Rechazados: "+ totalRechazados + " (" +  String.format("%.1f", porcentajeRechazados) + "%)");
 		System.out.println("Admitidos por paralelo -> C1: " + admitidosC1 + " | C2: " + admitidosC2);
+		double porcentajeC1 = 0.0;
+		double porcentajeC2 = 0.0;
+		
+		int sumaParalelos = 0;
+		
+		sumaParalelos = admitidosC1 + admitidosC2;
+		if (admitidosC1 > 0) {
+			porcentajeC1 = ((double)admitidosC1 / sumaParalelos) * 100;
+		}
+		if (admitidosC2 > 0) {
+			porcentajeC2 = ((double)admitidosC2 / sumaParalelos) * 100;
+		}
+		
+		/* String.format("%.1f" para redondear el porcentaje
+		 * 
+		 */
+		System.out.println("Porcentaje de alumnos por paralelo -> C1: " + admitidosC1 + "  Alumnos (" + String.format("%.1f",porcentajeC1) + "%) | C2: " + admitidosC2 + " Alumnos (" + String.format("%.1f",porcentajeC2) + "%)");
+		
+		if (admitidosC1 > admitidosC2) {
+			System.out.println("El paralelo con más alumnos es el C1 con: " + admitidosC1 + " Alumnos");
+		}else if (admitidosC1 < admitidosC2) {
+			System.out.println("El paralelo con más alumnos es el C2 con: " + admitidosC2 + " Alumnos");
+		} else {
+			System.out.println("Ambos paralelos tienen la misma cantidad de alumnos: " + admitidosC2 + " Alumnos");
+		}
+		
 		
 		double tasaAdmision = 0.0;
 		
@@ -197,7 +223,7 @@ public class Main {
 			tasaAdmision = ((double)totalAceptados / intentosIngreso) * 100;
 			
 		}
-		System.out.println("Tasa de admision: " + String.format("%.1f", tasaAdmision) + "%");
+		System.out.println("Tasa de admision: " + String.format("%.1f", tasaAdmision) + "%\n");
 	}
 	
 	
