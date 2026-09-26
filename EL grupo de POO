@@ -2,7 +2,7 @@
 
 //Javiera Maluenda - 21.995.972-9 - ITI
 
-package Taller;
+package taller_1;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -147,6 +147,14 @@ public class Main {
 				}else {
 				generarReportes();
 				}
+			
+			}else if (opcion == 6) {
+				if (!archivosCargados) {
+                    System.out.println("Error: Debe cargar los archivos primero (Opcion 1).\n");
+
+				}else {
+				estadisticasTotales();
+				}
 				
 			}else if (opcion == 7) {
 
@@ -161,6 +169,40 @@ public class Main {
 		scanner.close();
 
 	}
+	
+	/*estadisticas totales
+	 * 
+	 */
+	
+	private static void estadisticasTotales() {
+		System.out.println("--- Analisis estadistico ---");
+		intentosIngreso = totalAceptados + totalRechazados;
+		System.out.println("Total de intentos de ingreso:" + intentosIngreso);
+		
+		double porcentajeRechazados = 0.0;
+		
+		if (intentosIngreso > 0) {
+			porcentajeRechazados = ((double)totalRechazados / intentosIngreso) * 100;
+		}
+		
+		/* String.format("%.1f" para redondear el porcentaje
+		 * 
+		 */
+		System.out.println("Rechazados: "+ totalRechazados + " (" +  String.format("%.1f", porcentajeRechazados) + "%)");
+		System.out.println("Admitidos por paralelo -> C1: " + admitidosC1 + " | C2: " + admitidosC2);
+		
+		double tasaAdmision = 0.0;
+		
+		if (intentosIngreso > 0) {
+			tasaAdmision = ((double)totalAceptados / intentosIngreso) * 100;
+			
+		}
+		System.out.println("Tasa de admision: " + String.format("%.1f", tasaAdmision) + "%");
+	}
+	
+	
+	
+	
 	/*verifica la versión del archivo*/
 	private static int obtenerSiguienteVersion(String nomArchivo) {
 	    int version = 1;
